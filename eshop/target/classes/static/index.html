@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+</head>
+
+<body>
+  <h1 class="header">TEST JS</h1>
+  <button onclick="getUsers()">request</button>
+  <div id="output"></div>
+</body>
+
+<script>
+  function xhrRequest(method, url, data) {
+    let xhr = new XMLHttpRequest();
+    xhr.onreadystatechange = () => {
+      if (xhr.readyState !== 4) {
+        return;
+      }
+      document.getElementById('output').innerHTML = xhr.responseText;
+    }
+    xhr.open(method, url);
+    xhr.send(data);
+  }
+  function cityTable(){
+    return '<div></div>'
+  }
+
+  function getUsers() {
+    let method = 'GET';
+    let url = 'http://localhost:8080/cities';
+    xhrRequest(method, url, '');
+  }
+</script>
+
+</html>
