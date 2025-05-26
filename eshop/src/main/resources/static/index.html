@@ -2,32 +2,107 @@
 <html>
 
 <head>
+  <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+  <style>
+    button {
+      margin-left: 10px;
+      padding: 5px 10px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    .h2 {
+      font-family: Arial, Helvetica, sans-serif;
+    }
+
+    #edit {
+      background-color: #4CAF50;
+      color: white;
+      border-radius: 50px;
+    }
+
+    #delete {
+      background-color: #f44336;
+      color: white;
+      border-radius: 50px;
+    }
+
+    #create {
+      background-color: black;
+      color: white;
+      border-radius: 50px;
+    }
+
+    #create:hover {
+      background-color: gray;
+    }
+
+    #delete:hover {
+      background-color: darkred;
+    }
+
+    #edit:hover {
+      background-color: darkgreen;
+    }
+  </style>
 </head>
 
 <body>
   <h1 class="header">TEST JS</h1>
-  <button onclick="getUsers()">request</button>
+
+
   <div id="output"></div>
-</body>
 
-<script>
-  function xhrRequest(method, url, data) {
-    let xhr = new XMLHttpRequest();
-    xhr.onreadystatechange = () => {
-      if (xhr.readyState !== 4) {
-        return;
-      }
-      document.getElementById('output').innerHTML = xhr.responseText;
+
+  <ul id="citiesList"></ul>
+  <br><br>
+  <button id="create" onclick="createCity()">CREATE CITY</button>
+
+
+  <script>
+
+
+    function editCity(id) {
+      let newName = prompt('give a new name');
+      axios.put(`http://localhost:8080/cities/${id}`, { name: newName })
+        .then(() => getCities())
+        .catch(err => console.error(err));
     }
-    xhr.open(method, url);
-    xhr.send(data);
-  }
 
-  function getUsers() {
-    let method = 'GET';
-    let url = 'http://localhost:8080/cities';
-    xhrRequest(method, url, '');
-  }
-</script>
+    function deleteCity(id, name) {
+      if (confirm(`are you sure you want to delete ${name}?`)) {
+        axios.delete(`http://localhost:8080/cities/${id}`)
+          .then(() => getCities());
+      }
+    }
+
+    function createCity() {
+      let name = prompt('enter a city name');
+      axios.post('http://localhost:8080/cities/create', { name: name })
+        .then(() => getCities());
+
+    }
+
+    function getCities() {
+      axios.get('http://localhost:8080/cities').then((response) => {
+        let cities = response.data;
+        let list = document.getElementById('citiesList');
+        list.innerHTML = '';
+        cities.forEach(city => {
+          let li = document.createElement('li');
+          li.innerHTML = `
+        <h2>${city.name}</h2>
+        <button id="edit" onclick="editCity('${city.id}')">edit</button>
+        <button id="delete" onclick="deleteCity('${city.id}','${city.name}')">delete</button>`;
+          list.appendChild(li);
+        });
+      });
+
+    }
+    window.onload = getCities;
+
+  </script>
+</body>
 
 </html>

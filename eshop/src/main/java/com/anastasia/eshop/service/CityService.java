@@ -34,4 +34,11 @@ public class CityService {
     cityRepository.deleteById(id);
   }
 
+  public City updateCity(Long id,City city){
+
+   City existingCity= cityRepository.findById(id).orElseThrow(()->new RuntimeException("city not found"));
+   existingCity.setName(city.getName());
+    return cityRepository.save(existingCity);
+  }
+
 }
